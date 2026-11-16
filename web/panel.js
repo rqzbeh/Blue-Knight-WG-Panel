@@ -159,3 +159,17 @@ function limitsEditor(client){
  form.onsubmit=e=>{e.preventDefault();action(async()=>{await api('/api/clients/'+client.id+'/details',{quotaBytes:Math.round(Number(quota.value)*1073741824),expiresAt:expiry.value?Math.floor(new Date(expiry.value).getTime()/1000):0});await refresh(true);message('Limits saved.')})};
  reset.onclick=async()=>{if(await confirmChange('Reset usage?','This resets the data allowance counter for this device.','Reset usage'))action(async()=>{await api('/api/clients/'+client.id+'/details',{resetUsage:true});await refresh(true)})};box.append(form);return box;
 }
+
+// Easter egg: play meow when hours === minutes (00:00, 01:01, ..., 23:23)
+let lastPlayedHourMinute = '';
+function checkEasterEgg() {
+ const now = new Date();
+ const h = now.getHours(), m = now.getMinutes();
+ const key = h + ':' + m;
+ if (h === m && lastPlayedHourMinute !== key) {
+  lastPlayedHourMinute = key;
+  new Audio('/api/easter-egg/meow').play().catch(() => {});
+ }
+}
+setInterval(checkEasterEgg, 1000);
+

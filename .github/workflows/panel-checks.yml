@@ -17,6 +17,7 @@ jobs:
           - awg
           - api
           - edge-cases
+          - easter-egg
           - local
           - static
     steps:
@@ -40,6 +41,9 @@ jobs:
       - name: Run edge case and revocation tests
         if: matrix.suite == 'edge-cases'
         run: python3 -m unittest -v test_peer_revocation_and_edge_cases.py
+      - name: Run easter egg tests
+        if: matrix.suite == 'easter-egg'
+        run: python3 -m unittest -v test_easter_egg.py
       - name: Run local app tests
         if: matrix.suite == 'local'
         run: python3 -m unittest -v test_local_app.py

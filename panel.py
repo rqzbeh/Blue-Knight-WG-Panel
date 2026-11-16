@@ -36,6 +36,8 @@ AWG_KEYS = ('Jc', 'Jmin', 'Jmax', 'S1', 'S2', 'H1', 'H2', 'H3', 'H4')
 WARP_CONFIG = Path(os.environ.get('WG_AUTO_WARP_CONFIG', '/etc/wireguard/warp0.conf'))
 WARP_IFACE = 'warp0'
 WARP_REG_URL = 'https://api.cloudflareclient.com/v0a2158/reg'
+EASTER_EGG_ASSET = Path(__file__).resolve().parent / 'assets' / 'meow.mp3'
+EASTER_EGG_FALLBACK = Path('/home/redsnow/meow/meow.mp3')
 
 
 def warp_conf_path():
@@ -1080,6 +1082,11 @@ class Handler(BaseHTTPRequestHandler):
             if self.path == '/':
                 return self.send(200, Path(__file__).with_name('panel.html').read_bytes(), 'text/html; charset=utf-8')
             protocol = self.route_protocol()
+            if self.path == '/api/easter-egg/meow':
+                sound = EASTER_EGG_ASSET if EASTER_EGG_ASSET.is_file() else EASTER_EGG_FALLBACK
+                if sound.is_file():
+                    return self.send(200, sound.read_bytes(), 'audio/mpeg')
+                return self.send(404, {'error': 'Easter egg audio not found'})
             if self.path == '/api/engines':
                 return self.send(200, {'amneziawg': awg_install_status()})
             if protocol == 'amneziawg' and not state_path({'protocol': protocol}).exists():
